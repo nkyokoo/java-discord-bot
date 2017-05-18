@@ -1,0 +1,47 @@
+import groovy.transform.Field
+import javafx.scene.media.AudioTrack
+
+group 'dvabot'
+version '1.0'
+
+repositories{
+    jcenter()
+    mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+mainClassName = 'bin.Main'
+
+
+sourceCompatibility = 1.8
+
+def jdaVersion = '3.0.0_171'
+
+dependencies {
+    compile 'com.sedmelluq:lavaplayer:1.2.36'
+    compile "net.dv8tion:JDA:$jdaVersion"
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.25'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+
+
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'dvabot',
+                'Implementation-Version': version,
+                'Main-Class': 'bin.Main',
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
+
+
+    }
+    baseName = project.name + '-all'
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    with jar
+}
